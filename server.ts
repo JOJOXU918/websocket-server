@@ -1,7 +1,10 @@
 // 简易 WebSocket 广播服务器
+const port = Deno.env.get("PORT") || "8000";  // 读取环境变量
 const clients = new Set<WebSocket>();
 
-Deno.serve({ port: 8000 }, (req) => {
+Deno.serve(
+  { hostname: "0.0.0.0", port: Number(port)}, // 绑定到所有网络接口
+  (req) => {
   // 检查是否是 WebSocket 升级请求
   if (req.headers.get("upgrade") === "websocket") {
     const { socket, response } = Deno.upgradeWebSocket(req);

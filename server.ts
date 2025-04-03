@@ -12,6 +12,7 @@ Deno.serve(
           messages.push(entry.value);
         }
         messages.sort((a, b) => a.timestamp - b.timestamp);
+        
         return new Response(JSON.stringify(messages), {
           headers: { 
             "Content-Type": "application/json",
@@ -20,7 +21,10 @@ Deno.serve(
         });
       } catch (error) {
         console.error("加载历史消息失败:", error);
-        return new Response("服务器内部错误", { status: 500 });
+        return new Response("服务器内部错误", { 
+          status: 500,
+          headers: { "Access-Control-Allow-Origin": "*" }
+        });
       }
     }
 
@@ -37,7 +41,9 @@ Deno.serve(
         try {
           const rawData = JSON.parse(e.data);
           const messageData = {
-            ...rawData,
+            sender: rawData.sender || "匿名用户", // 确保必填字段
+            content: rawData.content,
+            time: rawData.time || new Date().toLocaleTimeString("zh-CN"),
             timestamp: Date.now(),
             id: crypto.randomUUID()
           };

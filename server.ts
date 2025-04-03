@@ -1,4 +1,3 @@
-const kv = await Deno.openKv();
 const clients = new Set<WebSocket>();
 
 Deno.serve(
@@ -7,12 +6,18 @@ Deno.serve(
     // 处理历史消息请求
     if (req.url === "/history"|| req.url === "/history/") {
       try {
+        const kv = await Deno.openKv();
         const messages = [];
+
+        // 从 KV 读取数据
         for await (const entry of kv.list({ prefix: ["messages"] })) {
           messages.push(entry.value);
         }
+
+        // 按时间排序
         messages.sort((a, b) => a.timestamp - b.timestamp);
         
+        // 返回 JSON 并允许跨域
         return new Response(JSON.stringify(messages), {
           headers: { 
             "Content-Type": "application/json",

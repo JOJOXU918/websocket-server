@@ -3,6 +3,8 @@ const clients = new Set<WebSocket>();
 Deno.serve(
   { hostname: "0.0.0.0" },
   async (req) => {
+    const url = new URL(req.url);
+    
     // 处理历史消息请求
     if (url.pathname === "/history"|| url.pathname === "/history/") {
       if (req.method === "OPTIONS") {
@@ -15,7 +17,7 @@ Deno.serve(
           }
         });
       }
-      
+
       try {
         const kv = await Deno.openKv();
         const messages = [];

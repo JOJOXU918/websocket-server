@@ -5,7 +5,7 @@ Deno.serve(
   { hostname: "0.0.0.0" },
   async (req) => {
     // 处理历史消息请求
-    if (req.url === "/history") {
+    if (req.url === "/history"|| req.url === "/history/") {
       try {
         const messages = [];
         for await (const entry of kv.list({ prefix: ["messages"] })) {

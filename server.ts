@@ -4,7 +4,18 @@ Deno.serve(
   { hostname: "0.0.0.0" },
   async (req) => {
     // 处理历史消息请求
-    if (req.url === "/history"|| req.url === "/history/") {
+    if (url.pathname === "/history"|| url.pathname === "/history/") {
+      if (req.method === "OPTIONS") {
+        // 响应预检请求
+        return new Response(null, {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type"
+          }
+        });
+      }
+      
       try {
         const kv = await Deno.openKv();
         const messages = [];

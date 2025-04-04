@@ -64,16 +64,24 @@ Deno.serve(
 
     // 处理历史消息请求
     if (url.pathname === "/history"|| url.pathname === "/history/") {
+      try {
+        const messages = [];
+        for await (const entry of kv.list({ prefix: ["messages"] })) {
+          messages.push(entry.value);
+        }
+        messages.sort((a, b) => a.timestamp - b.timestamp);
+
       if (req.method === "OPTIONS") {
         // 响应预检请求
-        return new Response(null, {
+        return new Response(JSON.stringify(messages), {
           headers: {
-            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "https://infinitywechat.netlify.app",
             "Access-Control-Allow-Methods": "GET, OPTIONS",
             "Access-Control-Allow-Headers": "Content-Type"
           }
         });
-      }
+      } 
 
       try {
         
@@ -98,7 +106,9 @@ Deno.serve(
         console.error("加载历史消息失败:", error);
         return new Response("服务器内部错误", { 
           status: 500,
-          headers: { "Access-Control-Allow-Origin": "*" }
+          headers: { 
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "https://infinitywechat.netlify.app" }
         });
       }
     }

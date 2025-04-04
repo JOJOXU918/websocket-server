@@ -1,5 +1,6 @@
-const clients = new Set<WebSocket>();
 const kv = await Deno.openKv();
+const clients = new Set<WebSocket>();
+
 
 Deno.serve(
   { hostname: "0.0.0.0" },
@@ -43,7 +44,7 @@ Deno.serve(
         });
       }
     }
-    
+
     // 处理历史消息请求
     if (url.pathname === "/history"|| url.pathname === "/history/") {
       if (req.method === "OPTIONS") {

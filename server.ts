@@ -7,6 +7,20 @@ Deno.serve(
   async (req) => {
     const url = new URL(req.url);
 
+      // ================== 统一处理 OPTIONS 请求 ==================
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": "https://infinitywechat.netlify.app",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400" // 缓存 24 小时
+      }
+    });
+  }
+
+
+
     // 处理气泡数据保存 (POST)
     if (url.pathname === "/save-bubbles") {
       try {
@@ -16,13 +30,13 @@ Deno.serve(
         return new Response(JSON.stringify({ success: true }), {
           headers: { 
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+            "Access-Control-Allow-Origin": "https://infinitywechat.netlify.app" // 精确域名
           }
         });
       } catch (error) {
         return new Response(JSON.stringify({ error: "保存失败" }), {
           status: 500,
-          headers: { "Access-Control-Allow-Origin": "*" }
+          headers: { "Access-Control-Allow-Origin": "https://infinitywechat.netlify.app"  }
         });
       }
     }
@@ -35,12 +49,15 @@ Deno.serve(
         return new Response(JSON.stringify(bubbles), {
           headers: { 
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
+            "Access-Control-Allow-Origin": "https://infinitywechat.netlify.app"
           }
         });
       } catch (error) {
         return new Response(JSON.stringify([]), {
-          headers: { "Access-Control-Allow-Origin": "*" }
+          headers: { 
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "https://infinitywechat.netlify.app"
+          }
         });
       }
     }

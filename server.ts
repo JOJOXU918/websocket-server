@@ -1,9 +1,48 @@
 const clients = new Set<WebSocket>();
+const kv = await Deno.openKv();
 
 Deno.serve(
   { hostname: "0.0.0.0" },
   async (req) => {
     const url = new URL(req.url);
+
+    // 处理气泡数据保存 (POST)
+    if (url.pathname === "/save-bubbles") {
+      try {
+        const bubblesData = await req.json();
+        await kv.set(["bubbles", "latest"], bubblesData); // 存储气泡数据
+      
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { 
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+          }
+        });
+      } catch (error) {
+        return new Response(JSON.stringify({ error: "保存失败" }), {
+          status: 500,
+          headers: { "Access-Control-Allow-Origin": "*" }
+        });
+      }
+    }
+
+    if (url.pathname === "/load-bubbles") {
+      try {
+        const entry = await kv.get(["bubbles", "latest"]);
+        const bubbles = entry.value || [];
+        
+        return new Response(JSON.stringify(bubbles), {
+          headers: { 
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+          }
+        });
+      } catch (error) {
+        return new Response(JSON.stringify([]), {
+          headers: { "Access-Control-Allow-Origin": "*" }
+        });
+      }
+    }
     
     // 处理历史消息请求
     if (url.pathname === "/history"|| url.pathname === "/history/") {
@@ -19,7 +58,7 @@ Deno.serve(
       }
 
       try {
-        const kv = await Deno.openKv();
+        
         const messages = [];
 
         // 从 KV 读取数据

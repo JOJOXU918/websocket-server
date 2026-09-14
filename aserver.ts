@@ -3,7 +3,7 @@ const kv = await Deno.openKv();
 const clients = new Set<WebSocket>();
 
 // 统一的 CORS 头（根据你的 Netlify 域名设置）
-const ALLOWED_ORIGIN = "https://infinitywechat.netlify.app/";
+const ALLOWED_ORIGIN = "https://infinitywechat2026.netlify.app/";
 const corsHeaders = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
